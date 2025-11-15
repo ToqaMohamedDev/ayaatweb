@@ -1,0 +1,224 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&family=Scheherazade+New:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-arabic: 'Amiri', 'Scheherazade New', 'Cairo', serif;
+  }
+
+  * {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+
+  body {
+    @apply text-gray-900 dark:text-white bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900;
+    font-feature-settings: "kern" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl p-6 transition-all duration-300 border border-gray-100 dark:border-gray-700/50;
+    box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  .card:hover {
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 8px 16px -8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-hover {
+    @apply bg-white dark:bg-gray-800 rounded-2xl p-6 transition-all duration-300 border border-gray-100 dark:border-gray-700/50 hover:scale-[1.02];
+    box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  .card-hover:hover {
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 8px 16px -8px rgba(0, 0, 0, 0.1);
+    border-color: #a7f3d0;
+  }
+
+  .dark .card-hover:hover {
+    border-color: #047857;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 text-white rounded-xl font-semibold shadow-lg transition-all duration-300 hover:scale-105 active:scale-95;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 20px rgba(5, 150, 105, 0.3);
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-white dark:bg-gray-800 rounded-xl font-semibold border-2 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95;
+    color: #059669;
+    border-color: #a7f3d0;
+  }
+
+  .dark .btn-secondary {
+    color: #34d399;
+    border-color: #047857;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200;
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px #10b981;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-primary {
+    @apply badge;
+    background-color: #d1fae5;
+    color: #047857;
+  }
+
+  .dark .badge-primary {
+    background-color: rgba(6, 78, 59, 0.3);
+    color: #6ee7b7;
+  }
+
+  .badge-success {
+    @apply badge;
+    background-color: #d1fae5;
+    color: #047857;
+  }
+
+  .dark .badge-success {
+    background-color: rgba(6, 78, 59, 0.3);
+    color: #6ee7b7;
+  }
+}
+
+@layer utilities {
+  .font-arabic {
+    font-family: 'Amiri', 'Scheherazade New', 'Cairo', serif;
+    font-feature-settings: "kern" 1;
+    text-rendering: optimizeLegibility;
+    line-height: 2.2;
+    letter-spacing: 0.01em;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to right, #059669, #34d399);
+    -webkit-background-clip: text;
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to right, #d97706, #fbbf24);
+    -webkit-background-clip: text;
+  }
+
+  .glass {
+    @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border border-white/20 dark:border-gray-700/50;
+  }
+
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  }
+}
+
+/* تحسينات للخط العربي */
+.arabic-text {
+  font-family: 'Amiri', 'Scheherazade New', 'Cairo', serif;
+  line-height: 2.2;
+  letter-spacing: 0.01em;
+  font-feature-settings: "kern" 1;
+}
+
+/* تخصيص scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #34d399, #059669);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #10b981, #047857);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #10b981, #047857);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #059669, #065f46);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.5s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* تحسينات للانتقالات */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
