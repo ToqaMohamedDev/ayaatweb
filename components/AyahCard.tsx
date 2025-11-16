@@ -55,13 +55,17 @@ export function AyahCard({ ayah, surahNumber, surahName, showBismillah }: AyahCa
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
-      className="group relative bg-white dark:bg-gray-800 rounded-3xl p-8 mb-6 border border-gray-100 dark:border-gray-700/50 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-150px" }}
+      transition={{ duration: 0.2 }}
+      className="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 mb-6 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden transition-all duration-500 hover:border-emerald-500/50 dark:hover:border-emerald-400/50 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/20"
     >
-      {/* Decorative gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-50/30 via-transparent to-secondary-50/30 dark:from-primary-900/10 dark:via-transparent dark:to-secondary-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      
+      {/* Glowing orb effect */}
+      <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-all duration-700"></div>
       
       {/* Actions Bar */}
       <motion.div
@@ -105,11 +109,16 @@ export function AyahCard({ ayah, surahNumber, surahName, showBismillah }: AyahCa
       <div className="relative flex items-start gap-6 rtl:gap-reverse">
         {/* Ayah Number */}
         <motion.div
-          whileHover={{ scale: 1.1, rotate: 5 }}
-          className="flex-shrink-0 w-16 h-16 rounded-2xl text-white flex items-center justify-center font-bold text-lg shadow-xl"
-          style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' }}
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 400 }}
+          className="relative flex-shrink-0"
         >
-          {ayah.numberInSurah}
+          {/* Icon glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+          {/* Number background */}
+          <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 dark:from-emerald-400 dark:to-teal-500 text-white flex items-center justify-center font-bold text-lg shadow-lg">
+            {ayah.numberInSurah}
+          </div>
         </motion.div>
 
         {/* Ayah Text */}
@@ -122,13 +131,16 @@ export function AyahCard({ ayah, surahNumber, surahName, showBismillah }: AyahCa
             </div>
           )}
           <p
-            className={`${fontSizeClasses[settings.fontSize]} font-arabic text-gray-900 dark:text-white leading-loose text-right group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors duration-300`}
+            className={`${fontSizeClasses[settings.fontSize]} font-arabic text-gray-900 dark:text-white leading-loose text-right group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300`}
             dir="rtl"
           >
             {ayah.text}
           </p>
         </div>
       </div>
+
+      {/* Bottom accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
       {/* Copy Feedback */}
       <AnimatePresence>

@@ -73,28 +73,42 @@ export default function FavoritesPage() {
   };
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="mb-10"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-[#16A34A] dark:bg-[#30D09A] flex items-center justify-center shadow-lg">
-              <Heart className="h-8 w-8 text-white" />
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/5 dark:bg-teal-500/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 pt-8"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 400 }}
+                className="relative"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl blur-xl opacity-40"></div>
+                <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 dark:from-emerald-400 dark:to-teal-500 flex items-center justify-center shadow-lg">
+                  <Heart className="h-8 w-8 text-white" strokeWidth={2} />
+                </div>
+              </motion.div>
+              <div>
+                <h1 className="text-5xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-emerald-600 via-teal-600 to-green-600 dark:from-emerald-400 dark:via-teal-400 dark:to-green-400 bg-clip-text text-transparent">
+                  الآيات المفضلة
+                </h1>
+                <p className="text-xl text-gray-600 dark:text-gray-300">
+                  {favorites.length} آية محفوظة
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-5xl md:text-6xl font-bold mb-2 text-[#0F172A] dark:text-[#ECFDF5]">
-                الآيات المفضلة
-              </h1>
-              <p className="text-xl text-[#64748B] dark:text-[#ECFDF5]/60">
-                {favorites.length} آية محفوظة
-              </p>
-            </div>
-          </div>
           {filteredFavorites.length > 0 && (
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -191,12 +205,20 @@ export default function FavoritesPage() {
               <motion.div
                 key={favorite.id}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.03 }}
-                whileHover={{ y: -2 }}
-                className="bg-white/60 dark:bg-[#141D1B]/60 backdrop-blur-[16px] rounded-[20px] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-[#16A34A]/10 dark:border-[#30D09A]/10 hover:shadow-[0_12px_48px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_48px_rgba(0,0,0,0.4)] transition-all duration-300"
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-150px" }}
+                transition={{ duration: 0.2, delay: Math.min(index * 0.01, 0.3) }}
+                className="group"
               >
-                <div className="flex items-start justify-between mb-4">
+                <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden transition-all duration-500 hover:border-emerald-500/50 dark:hover:border-emerald-400/50 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/20"
+                >
+                  {/* Animated gradient background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  {/* Glowing orb effect */}
+                  <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-all duration-700"></div>
+                  
+                  <div className="relative flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-4 flex-wrap">
                       <Link
@@ -298,12 +320,17 @@ export default function FavoritesPage() {
                       <Trash2 className="h-5 w-5" />
                     </motion.button>
                   </div>
+                  </div>
+                  
+                  {/* Bottom accent line */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
               </motion.div>
             ))}
           </div>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 }

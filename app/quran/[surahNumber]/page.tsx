@@ -90,16 +90,23 @@ export default function SurahPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="mb-10 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-8 shadow-xl border border-gray-200 dark:border-gray-700"
-      >
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex-1">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/5 dark:bg-teal-500/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 pt-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-gray-700/50"
+        >
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-6">
+          <div className="flex-1 w-full">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
                 <BookOpen className="h-8 w-8 text-white" />
@@ -121,14 +128,14 @@ export default function SurahPage() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
+            <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 rounded-xl p-1 flex-1 sm:flex-initial">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setViewMode("mushaf")}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
+                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1 sm:gap-2 flex-1 sm:flex-initial justify-center ${
                   viewMode === "mushaf"
                     ? "bg-[#16A34A] dark:bg-[#30D09A] text-white shadow-lg"
                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -141,7 +148,7 @@ export default function SurahPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setViewMode("cards")}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
+                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1 sm:gap-2 flex-1 sm:flex-initial justify-center ${
                   viewMode === "cards"
                     ? "bg-[#16A34A] dark:bg-[#30D09A] text-white shadow-lg"
                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -153,7 +160,7 @@ export default function SurahPage() {
             </div>
 
             {/* Settings */}
-            <div className="relative">
+            <div className="relative" style={{ zIndex: 9999 }}>
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -163,38 +170,48 @@ export default function SurahPage() {
                 <Settings className="h-5 w-5" />
               </motion.button>
               {showSettings && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 z-10 border border-gray-200 dark:border-gray-700"
-                >
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    حجم الخط
-                  </label>
-                  <div className="space-y-2">
-                    {(["small", "medium", "large", "xlarge"] as const).map((size) => (
-                      <motion.button
-                        key={size}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                          setFontSize(size);
-                          setShowSettings(false);
-                        }}
-                        className={`w-full text-right px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                          settings.fontSize === size
-                            ? "bg-[#16A34A] dark:bg-[#30D09A] text-white shadow-lg"
-                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                        }`}
-                      >
-                        {size === "small" && "صغير"}
-                        {size === "medium" && "متوسط"}
-                        {size === "large" && "كبير"}
-                        {size === "xlarge" && "كبير جداً"}
-                      </motion.button>
-                    ))}
-                  </div>
-                </motion.div>
+                <>
+                  {/* Backdrop to close on click outside */}
+                  <div 
+                    className="fixed inset-0" 
+                    style={{ zIndex: 9998 }}
+                    onClick={() => setShowSettings(false)}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-56 sm:w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 border border-gray-200 dark:border-gray-700"
+                    style={{ zIndex: 9999 }}
+                  >
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      حجم الخط
+                    </label>
+                    <div className="space-y-2">
+                      {(["small", "medium", "large", "xlarge"] as const).map((size) => (
+                        <motion.button
+                          key={size}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => {
+                            setFontSize(size);
+                            setShowSettings(false);
+                          }}
+                          className={`w-full text-right px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                            settings.fontSize === size
+                              ? "bg-[#16A34A] dark:bg-[#30D09A] text-white shadow-lg"
+                              : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                          }`}
+                        >
+                          {size === "small" && "صغير"}
+                          {size === "medium" && "متوسط"}
+                          {size === "large" && "كبير"}
+                          {size === "xlarge" && "كبير جداً"}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </motion.div>
+                </>
               )}
             </div>
           </div>
@@ -248,30 +265,24 @@ export default function SurahPage() {
       ) : (
         <div className="space-y-6">
           {surah.ayahs.map((ayah, index) => (
-            <motion.div
+            <AyahCard
               key={ayah.number}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.02 }}
-            >
-              <AyahCard
-                ayah={ayah}
-                surahNumber={surah.number}
-                surahName={surah.name}
-                showBismillah={index === 0 && surah.number !== 1 && surah.number !== 9}
-              />
-            </motion.div>
+              ayah={ayah}
+              surahNumber={surah.number}
+              surahName={surah.name}
+              showBismillah={index === 0 && surah.number !== 1 && surah.number !== 9}
+            />
           ))}
         </div>
       )}
 
-      {/* Bottom Navigation */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-12 flex items-center justify-between pt-8 border-t border-gray-200 dark:border-gray-700"
-      >
+        {/* Bottom Navigation */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-12 flex items-center justify-between pt-8 border-t border-gray-200 dark:border-gray-700"
+        >
         {prevSurah ? (
           <motion.button
             whileHover={{ scale: 1.05, x: -5 }}
@@ -304,7 +315,8 @@ export default function SurahPage() {
         ) : (
           <div></div>
         )}
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }

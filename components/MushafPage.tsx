@@ -12,12 +12,10 @@ interface MushafPageProps {
   showBismillah?: boolean;
 }
 
-// رمز علامة الآية (U+06DD) - رمز عثماني تقليدي
-const AYAH_MARKER = "۝";
-
-// دالة لإدراج علامات الآيات في النص
-function insertAyahMarkers(ayahs: Ayah[]): string {
-  return ayahs.map(ayah => ayah.text).join(` ${AYAH_MARKER} `);
+// دالة لتحويل الأرقام إلى الأرقام العربية الشرقية
+function toArabicNumerals(num: number): string {
+  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  return num.toString().split('').map(digit => arabicNumerals[parseInt(digit)]).join('');
 }
 
 export function MushafPage({
@@ -27,6 +25,7 @@ export function MushafPage({
   showBismillah = false,
 }: MushafPageProps) {
   const { settings } = useTheme();
+  const isDark = settings.theme === "dark";
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -49,116 +48,67 @@ export function MushafPage({
     xlarge: "text-5xl",
   };
 
-  // دمج النص مع علامات الآيات
-  const fullText = useMemo(() => {
-    if (showBismillah && surahNumber !== 1 && surahNumber !== 9) {
-      return `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ${AYAH_MARKER} ${insertAyahMarkers(ayahs)}`;
-    }
-    return insertAyahMarkers(ayahs);
+  // دمج النص مع ترقيم الآيات
+  const processedAyahs = useMemo(() => {
+    return ayahs.map((ayah, index) => {
+      let text = ayah.text;
+      const isBismillah = index === 0 && showBismillah && surahNumber !== 1 && surahNumber !== 9;
+      
+      // إزالة البسملة من بداية نص الآية الأولى فقط إذا كانت موجودة
+      if (isBismillah && index === 0) {
+        // إزالة البسملة بجميع أشكالها من بداية النص (مع أو بدون رقم الآية قبلها)
+        const bismillahPatterns = [
+          /^[٠١٢٣٤٥٦٧٨٩0-9]*\s*بِسْمِ\s*اللَّهِ\s*الرَّحْمَٰنِ\s*الرَّحِيمِ\s*/,
+          /^[٠١٢٣٤٥٦٧٨٩0-9]*\s*بِسْمِ\s*اللَّهِ\s*الرَّحْمَٰنِ\s*الرَّحِيمِ\s*/,
+          /^[٠١٢٣٤٥٦٧٨٩0-9]*\s*بِسْمِ\s*الله\s*الرَّحْمَٰنِ\s*الرَّحِيمِ\s*/,
+          /^[٠١٢٣٤٥٦٧٨٩0-9]*\s*بِسْمِ\s*الله\s*الرَّحْمَٰنِ\s*الرَّحِيمِ\s*/,
+          /^بِسْمِ\s*اللَّهِ\s*الرَّحْمَٰنِ\s*الرَّحِيمِ\s*/,
+          /^بِسْمِ\s*اللَّهِ\s*الرَّحْمَٰنِ\s*الرَّحِيمِ\s*/,
+          /^بِسْمِ\s*الله\s*الرَّحْمَٰنِ\s*الرَّحِيمِ\s*/,
+          /^بِسْمِ\s*الله\s*الرَّحْمَٰنِ\s*الرَّحِيمِ\s*/,
+        ];
+        
+        for (const pattern of bismillahPatterns) {
+          text = text.replace(pattern, '');
+        }
+        // إزالة أي مسافات زائدة في البداية
+        text = text.trim();
+      }
+      
+      return {
+        text: text,
+        number: ayah.numberInSurah,
+        isBismillah: isBismillah,
+      };
+    });
   }, [ayahs, showBismillah, surahNumber]);
 
   return (
     <div className="relative w-full" ref={containerRef}>
-      {/* خلفية ورق كريمي مع نسيج */}
+      {/* خلفية ورق كريمي بسيطة وهادئة */}
       <div
-        className="relative rounded-lg overflow-hidden shadow-2xl mx-auto"
+        className="relative rounded-lg overflow-hidden mx-auto"
         style={{
-          background: `
-            linear-gradient(135deg, #fef9e7 0%, #fef5e7 50%, #fef3e7 100%),
-            repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 2px,
-              rgba(139, 69, 19, 0.03) 2px,
-              rgba(139, 69, 19, 0.03) 4px
-            )
-          `,
+          background: isDark ? "#1a1a1a" : "#f9f7f4",
           minHeight: "900px",
           maxWidth: "1200px",
+          boxShadow: isDark 
+            ? "0 2px 20px rgba(0, 0, 0, 0.3)" 
+            : "0 2px 20px rgba(0, 0, 0, 0.08)",
         }}
       >
-        {/* حدود ذهبية */}
+        {/* حد بسيط وهادئ */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* الحد الخارجي الذهبي */}
           <div
             className="absolute inset-0 rounded-lg"
             style={{
-              border: "12px solid",
-              borderImage: "linear-gradient(135deg, #d4af37 0%, #f4d03f 30%, #d4af37 60%, #c9a227 100%) 1",
+              border: `1px solid ${isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(139, 69, 19, 0.08)"}`,
             }}
           />
-          
-          {/* الحد الداخلي */}
-          <div
-            className="absolute inset-6 rounded"
-            style={{
-              border: "3px solid rgba(212, 175, 55, 0.4)",
-            }}
-          />
-        </div>
-
-        {/* زخارف زاوية إسلامية */}
-        <div className="absolute top-12 right-12 w-32 h-32 opacity-15">
-          <svg viewBox="0 0 120 120" className="w-full h-full" style={{ color: "#d4af37" }}>
-            <path
-              d="M20,20 L100,20 L100,100 L20,100 Z M30,30 L90,30 L90,90 L30,90 Z"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <circle cx="60" cy="60" r="12" fill="currentColor" opacity="0.5" />
-            <path
-              d="M40,40 L80,40 M40,80 L80,80 M40,40 L40,80 M80,40 L80,80"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </svg>
-        </div>
-        <div className="absolute bottom-12 left-12 w-32 h-32 opacity-15">
-          <svg viewBox="0 0 120 120" className="w-full h-full" style={{ color: "#d4af37" }}>
-            <path
-              d="M20,20 L100,20 L100,100 L20,100 Z M30,30 L90,30 L90,90 L30,90 Z"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <circle cx="60" cy="60" r="12" fill="currentColor" opacity="0.5" />
-            <path
-              d="M40,40 L80,40 M40,80 L80,80 M40,40 L40,80 M80,40 L80,80"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </svg>
         </div>
 
         {/* المحتوى */}
         <div className="relative z-10 p-20">
-          {/* عنوان السورة */}
-          <div className="text-center mb-16">
-            <motion.h2
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="font-arabic text-5xl font-bold mb-4"
-              style={{
-                color: "#8b4513",
-                textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
-                fontFamily: "'Amiri', serif",
-              }}
-            >
-              {surahName}
-            </motion.h2>
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="w-40 h-1.5 mx-auto"
-              style={{
-                background: "linear-gradient(90deg, transparent, #d4af37, #f4d03f, #d4af37, transparent)",
-                borderRadius: "2px",
-              }}
-            />
-          </div>
-
           {/* النص */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -167,68 +117,139 @@ export function MushafPage({
             className={`${fontSizeClasses[settings.fontSize]} font-arabic`}
             dir="rtl"
             style={{
-              color: "#2c1810",
+              color: isDark ? "#ECFDF5" : "#2c1810",
               fontFamily: "'Amiri', 'Scheherazade New', serif",
               textAlign: "justify",
               textJustify: "inter-word",
               lineHeight: "3.5",
               fontWeight: 400,
               letterSpacing: "0.02em",
-              hyphens: "auto",
-              WebkitHyphens: "auto",
-              MozHyphens: "auto",
-              msHyphens: "auto",
+              wordSpacing: "0.1em",
             }}
           >
-            {fullText.split(/(۝)/g).map((part, index) => {
-              if (part === AYAH_MARKER) {
-                return (
-                  <span
-                    key={index}
-                    className="inline-block mx-2 my-0 align-middle"
-                    style={{
-                      color: "#d4af37",
-                      fontSize: "0.45em",
+            {processedAyahs.map((ayah, index) => (
+              <span key={ayah.number} style={{ display: "inline" }}>
+                {ayah.isBismillah && (
+                  <>
+                    <div style={{
+                      display: "block",
+                      textAlign: "center",
+                      marginBottom: "16px",
+                      color: isDark ? "#30D09A" : "#8b4513",
+                      fontFamily: "'Amiri', serif",
+                      fontWeight: 600,
+                    }}>
+                      بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                    </div>
+                    <span 
+                      style={{ 
+                        display: "inline-block",
+                        margin: "0 12px",
+                        verticalAlign: "middle",
+                      }}
+                    >
+                      <span
+                        className="inline-flex items-center justify-center relative"
+                        style={{
+                          minWidth: "38px",
+                          height: "38px",
+                          borderRadius: "12px",
+                          background: isDark ? "#141D1B" : "#fef9e7",
+                          color: isDark ? "#30D09A" : "#8b4513",
+                          fontSize: "0.48em",
+                          fontWeight: 800,
+                          fontFamily: "'Amiri', serif",
+                          boxShadow: isDark
+                            ? `
+                              0 0 0 2px #30D09A,
+                              0 4px 12px rgba(48, 208, 154, 0.2),
+                              inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                            `
+                            : `
+                              0 0 0 2px #d4af37,
+                              0 4px 12px rgba(212, 175, 55, 0.25),
+                              inset 0 1px 0 rgba(255, 255, 255, 0.5)
+                            `,
+                          lineHeight: "1",
+                          padding: "0",
+                          position: "relative",
+                        }}
+                      >
+                        <span style={{
+                          position: "absolute",
+                          top: "-2px",
+                          right: "-2px",
+                          width: "8px",
+                          height: "8px",
+                          borderRadius: "50%",
+                          background: isDark
+                            ? "linear-gradient(135deg, #30D09A, #16A34A)"
+                            : "linear-gradient(135deg, #f4d03f, #d4af37)",
+                          boxShadow: isDark
+                            ? "0 2px 4px rgba(48, 208, 154, 0.4)"
+                            : "0 2px 4px rgba(212, 175, 55, 0.4)",
+                        }}></span>
+                        {toArabicNumerals(ayah.number)}
+                      </span>
+                    </span>
+                  </>
+                )}
+                {!ayah.isBismillah && (
+                  <span 
+                    style={{ 
+                      display: "inline-block",
+                      margin: "0 12px",
                       verticalAlign: "middle",
-                      fontFamily: "serif",
-                      lineHeight: "1",
-                      minWidth: "28px",
                     }}
                   >
-                    <svg
-                      width="28"
-                      height="28"
-                      viewBox="0 0 28 28"
-                      className="inline-block align-middle"
-                      style={{ verticalAlign: "middle" }}
+                    <span
+                      className="inline-flex items-center justify-center relative"
+                      style={{
+                        minWidth: "38px",
+                        height: "38px",
+                        borderRadius: "12px",
+                        background: isDark ? "#141D1B" : "#fef9e7",
+                        color: isDark ? "#30D09A" : "#8b4513",
+                        fontSize: "0.48em",
+                        fontWeight: 800,
+                        fontFamily: "'Amiri', serif",
+                        boxShadow: isDark
+                          ? `
+                            0 0 0 2px #30D09A,
+                            0 4px 12px rgba(48, 208, 154, 0.2),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                          `
+                          : `
+                            0 0 0 2px #d4af37,
+                            0 4px 12px rgba(212, 175, 55, 0.25),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.5)
+                          `,
+                        lineHeight: "1",
+                        padding: "0",
+                        position: "relative",
+                      }}
                     >
-                      <circle
-                        cx="14"
-                        cy="14"
-                        r="10"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        opacity="0.8"
-                      />
-                      <circle
-                        cx="14"
-                        cy="14"
-                        r="4"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M14,4 L14,8 M14,20 L14,24 M4,14 L8,14 M20,14 L24,14"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                      />
-                    </svg>
+                      <span style={{
+                        position: "absolute",
+                        top: "-2px",
+                        right: "-2px",
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        background: isDark
+                          ? "linear-gradient(135deg, #30D09A, #16A34A)"
+                          : "linear-gradient(135deg, #f4d03f, #d4af37)",
+                        boxShadow: isDark
+                          ? "0 2px 4px rgba(48, 208, 154, 0.4)"
+                          : "0 2px 4px rgba(212, 175, 55, 0.4)",
+                      }}></span>
+                      {toArabicNumerals(ayah.number)}
+                    </span>
                   </span>
-                );
-              }
-              return <span key={index}>{part}</span>;
-            })}
+                )}
+                <span style={{ display: "inline" }}>{ayah.text}</span>
+              </span>
+            ))}
           </motion.div>
 
           {/* زخرفة سفلية */}
@@ -241,14 +262,16 @@ export function MushafPage({
             <div
               className="w-80 h-1.5 mx-auto mb-6"
               style={{
-                background: "linear-gradient(90deg, transparent, #d4af37, #f4d03f, #d4af37, transparent)",
+                background: isDark
+                  ? "linear-gradient(90deg, transparent, #30D09A, #16A34A, #30D09A, transparent)"
+                  : "linear-gradient(90deg, transparent, #d4af37, #f4d03f, #d4af37, transparent)",
                 borderRadius: "2px",
               }}
             />
             <div
               className="text-base font-semibold opacity-70"
               style={{
-                color: "#8b4513",
+                color: isDark ? "#ECFDF5" : "#8b4513",
                 fontFamily: "'Amiri', serif",
               }}
             >
