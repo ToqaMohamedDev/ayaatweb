@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, useLayoutEffect, ReactNode } from "react";
 import { AppSettings } from "@/types";
 import { StorageKeys, getStorageItem, setStorageItem } from "@/lib/storage";
 
@@ -22,30 +22,38 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
+  // استخدام useLayoutEffect لتطبيق الثيم قبل الرسم لتقليل flicker
+  useLayoutEffect(() => {
     const saved = getStorageItem<AppSettings>(StorageKeys.APP_SETTINGS, defaultSettings);
     setSettings(saved);
     
-    // تطبيق الثيم
+    // تطبيق الثيم فوراً
+    const root = document.documentElement;
     if (saved.theme === "dark") {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
     }
+    
+    setMounted(true);
   }, []);
 
-  useEffect(() => {
+  // استخدام useLayoutEffect لتطبيق الثيم قبل re-render
+  useLayoutEffect(() => {
     if (!mounted) return;
-    setStorageItem(StorageKeys.APP_SETTINGS, settings);
     
-    // تطبيق الثيم
+    const root = document.documentElement;
+    
+    // تطبيق الثيم بشكل فوري
     if (settings.theme === "dark") {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
     }
-  }, [settings, mounted]);
+    
+    // حفظ الإعدادات بعد تطبيق الثيم
+    setStorageItem(StorageKeys.APP_SETTINGS, settings);
+  }, [settings.theme, mounted]);
 
   const toggleTheme = () => {
     setSettings((prev) => ({

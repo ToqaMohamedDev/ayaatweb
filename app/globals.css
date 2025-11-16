@@ -32,6 +32,10 @@
     padding: 0;
     min-height: 100%;
     overflow-x: hidden;
+    /* تحسين الأداء */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: scroll-position;
   }
 
   /* Improved focus states for accessibility */
@@ -143,7 +147,17 @@
   }
 
   .glass {
-    @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border border-white/20 dark:border-gray-700/50;
+    @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-white/20 dark:border-gray-700/50;
+    /* تقليل backdrop-blur للأداء */
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .glass {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
   }
 
   .bg-gradient-primary {
@@ -234,20 +248,63 @@
   animation: scaleIn 0.3s ease-out;
 }
 
-  /* تحسينات للانتقالات */
-  * {
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  /* تحسينات للانتقالات - محددة بدلاً من عامة */
+  button, a, .card, .card-hover, .btn-primary, .btn-secondary, .input-field {
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 200ms;
+    transition-duration: 150ms;
+  }
+  
+  /* تقليل الانتقالات للعناصر الكبيرة */
+  body, html {
+    transition: background-color 200ms ease, color 200ms ease;
   }
 
   /* Performance optimizations */
   .will-change-transform {
     will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 
   .will-change-opacity {
     will-change: opacity;
+    transform: translateZ(0);
+  }
+  
+  /* CSS Containment للأداء */
+  .card, .card-hover {
+    contain: layout style paint;
+  }
+  
+  /* تحسين rendering للدارك مود */
+  .dark {
+    color-scheme: dark;
+  }
+  
+  /* تقليل repaints */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* GPU acceleration للعناصر المتحركة */
+  [class*="motion-"], [class*="animate-"] {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  
+  /* تحسين الأداء للعناصر مع backdrop-blur */
+  [class*="backdrop-blur"] {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* تقليل repaints للعناصر الثابتة */
+  nav, header, footer {
+    contain: layout style paint;
   }
 
   /* Smooth scrolling for better UX */

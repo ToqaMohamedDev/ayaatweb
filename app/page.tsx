@@ -101,7 +101,7 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100/80 dark:bg-emerald-900/30 backdrop-blur-sm border border-emerald-200/50 dark:border-emerald-800/50"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100/90 dark:bg-emerald-900/40 backdrop-blur-[2px] border border-emerald-200/50 dark:border-emerald-800/50"
             >
               <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
@@ -168,7 +168,7 @@ export default function Home() {
                 <motion.button
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="group px-10 py-5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md text-emerald-600 dark:text-emerald-400 rounded-2xl font-semibold text-lg border-2 border-emerald-200 dark:border-emerald-800 shadow-xl hover:shadow-2xl hover:border-emerald-300 dark:hover:border-emerald-700 transition-all duration-300"
+                  className="group px-10 py-5 bg-white/95 dark:bg-gray-800/95 backdrop-blur-[4px] text-emerald-600 dark:text-emerald-400 rounded-2xl font-semibold text-lg border-2 border-emerald-200 dark:border-emerald-800 shadow-xl hover:shadow-2xl hover:border-emerald-300 dark:hover:border-emerald-700 transition-all duration-200"
                 >
                   <span className="flex items-center gap-2">
                     الأذكار
@@ -193,7 +193,7 @@ export default function Home() {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 1 + index * 0.1 }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-emerald-100 dark:border-emerald-900/50"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px] border border-emerald-100 dark:border-emerald-900/50"
                   >
                     <Icon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     <span className="text-lg font-bold text-gray-800 dark:text-gray-200">{stat.number}</span>
@@ -264,7 +264,7 @@ export default function Home() {
                   transition={{ duration: 0.5, delay: index * 0.15 }}
                 >
                   <Link href={feature.href} className="block group h-full">
-                    <div className="relative h-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden transition-all duration-500 hover:border-emerald-500/50 dark:hover:border-emerald-400/50 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/20">
+                    <div className="relative h-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-[2px] rounded-3xl p-8 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden transition-all duration-300 hover:border-emerald-500/50 dark:hover:border-emerald-400/50 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/20">
                       
                       {/* Animated gradient background */}
                       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -337,7 +337,7 @@ export default function Home() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="text-center"
                 >
-                  <div className="bg-white/60 dark:bg-[#141D1B]/60 backdrop-blur-[16px] rounded-[20px] p-6 sm:p-8 border border-[#16A34A]/10 dark:border-[#30D09A]/10 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                  <div className="bg-white/80 dark:bg-[#141D1B]/80 backdrop-blur-[4px] rounded-[20px] p-6 sm:p-8 border border-[#16A34A]/10 dark:border-[#30D09A]/10 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
                     <div className="mb-4 flex justify-center">
                       <Icon className="h-6 w-6 text-[#16A34A] dark:text-[#30D09A] stroke-[1.5]" />
                     </div>
@@ -449,7 +449,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100/80 dark:bg-emerald-900/30 backdrop-blur-sm border border-emerald-200/50 dark:border-emerald-800/50"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100/90 dark:bg-emerald-900/40 backdrop-blur-[2px] border border-emerald-200/50 dark:border-emerald-800/50"
               >
                 <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
@@ -524,7 +524,7 @@ export default function Home() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="flex items-center gap-3 justify-center lg:justify-end p-3 rounded-xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-emerald-100 dark:border-emerald-900/50"
+                      className="flex items-center gap-3 justify-center lg:justify-end p-3 rounded-xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-[2px] border border-emerald-100 dark:border-emerald-900/50"
                     >
                       <Icon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{item.text}</span>

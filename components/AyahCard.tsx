@@ -213,7 +213,7 @@ export function AyahCard({ ayah, surahNumber, surahName, showBismillah }: AyahCa
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-150px" }}
       transition={{ duration: 0.2 }}
-      className="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 mb-6 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden transition-all duration-500 hover:border-emerald-500/50 dark:hover:border-emerald-400/50 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/20"
+      className="group relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-[2px] rounded-3xl p-8 mb-6 border border-gray-200/50 dark:border-gray-700/50 overflow-hidden transition-all duration-300 hover:border-emerald-500/50 dark:hover:border-emerald-400/50 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/20"
     >
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -247,7 +247,7 @@ export function AyahCard({ ayah, surahNumber, surahName, showBismillah }: AyahCa
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         whileHover={{ opacity: 1, y: 0 }}
-        className="absolute top-6 left-6 rtl:left-auto rtl:right-6 z-10 flex items-center gap-2 rtl:gap-reverse bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl p-3 shadow-xl border border-gray-200/50 dark:border-gray-700/50"
+        className="absolute top-6 left-6 rtl:left-auto rtl:right-6 z-10 flex items-center gap-2 rtl:gap-reverse bg-white/95 dark:bg-gray-800/95 backdrop-blur-[4px] rounded-2xl p-3 shadow-xl border border-gray-200/50 dark:border-gray-700/50"
       >
         <BookmarkButton
           surahNumber={surahNumber}

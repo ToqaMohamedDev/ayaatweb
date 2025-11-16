@@ -22,7 +22,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-[#0E1412]/80 backdrop-blur-xl border-b border-[#16A34A]/10 dark:border-[#30D09A]/10 shadow-lg">
+    <nav className="sticky top-0 z-50 bg-white/90 dark:bg-[#0E1412]/90 backdrop-blur-sm border-b border-[#16A34A]/10 dark:border-[#30D09A]/10 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
@@ -66,7 +66,7 @@ export default function Navbar() {
   onClick={toggleTheme}
   whileHover={{ scale: 1.05 }}
   whileTap={{ scale: 0.95 }}
-  className="relative w-14 h-8 rounded-full p-1 transition-all duration-300 overflow-hidden"
+  className="relative w-14 h-8 rounded-full p-1 transition-colors duration-200 overflow-hidden will-change-transform"
   style={{
     background: settings.theme === "light" 
       ? "linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%)"
@@ -79,15 +79,16 @@ export default function Navbar() {
 >
   {/* Animated Circle */}
   <motion.div
-    className="absolute top-1 w-6 h-6 rounded-full flex items-center justify-center"
+    className="absolute top-1 w-6 h-6 rounded-full flex items-center justify-center will-change-transform"
     initial={false}
     animate={{
       left: settings.theme === "light" ? "4px" : "calc(100% - 28px)",
     }}
     transition={{
       type: "spring",
-      stiffness: 500,
-      damping: 30,
+      stiffness: 600,
+      damping: 35,
+      mass: 0.5,
     }}
     style={{
       background: settings.theme === "light"
@@ -96,6 +97,7 @@ export default function Navbar() {
       boxShadow: settings.theme === "light"
         ? "0 2px 8px rgba(251, 191, 36, 0.4), inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2)"
         : "0 2px 8px rgba(59, 130, 246, 0.4), inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3)",
+      transform: "translateZ(0)",
     }}
   >
     <motion.div
@@ -103,7 +105,11 @@ export default function Navbar() {
         rotate: settings.theme === "light" ? 0 : 180,
       }}
       transition={{
-        duration: 0.3,
+        duration: 0.25,
+        ease: "easeOut",
+      }}
+      style={{
+        transform: "translateZ(0)",
       }}
     >
       {settings.theme === "light" ? (
@@ -116,7 +122,7 @@ export default function Navbar() {
   
   {/* Background gradient overlay */}
   <div 
-    className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300"
+    className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-200"
     style={{
       background: settings.theme === "light"
         ? "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 100%)"
