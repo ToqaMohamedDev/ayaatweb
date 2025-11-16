@@ -59,7 +59,7 @@ export default function Footer() {
               آيات
             </h3>
             <p className="text-[#ECFDF5]/60 leading-relaxed mb-4">
-              بوابتك المتكاملة للقرآن الكريم، الأذكار، والسبحة الإلكترونية.
+              بوابتك للقرآن الكريم، الأذكار، والسبحة الإلكترونية.
             </p>
             <Link href="/" className="inline-flex items-center text-[#30D09A] hover:text-[#30D09A]/80 transition-colors font-medium">
               اكتشف المزيد
