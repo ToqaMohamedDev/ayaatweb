@@ -2,6 +2,8 @@
 
 import { Ayah } from "@/types";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAudio } from "@/contexts/AudioContext";
+import { Volume2, VolumeX, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect, useRef } from "react";
 
@@ -25,9 +27,13 @@ export function MushafPage({
   showBismillah = false,
 }: MushafPageProps) {
   const { settings } = useTheme();
+  const { setCurrentAudio, currentAudioId } = useAudio();
   const isDark = settings.theme === "dark";
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const audioRefs = useRef<Record<number, HTMLAudioElement>>({});
+  const [playingStates, setPlayingStates] = useState<Record<number, boolean>>({});
+  const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const updateWidth = () => {
@@ -47,6 +53,151 @@ export function MushafPage({
     large: "text-4xl",
     xlarge: "text-5xl",
   };
+
+  // Get audio URL
+  const getAudioUrl = (ayahNumber: number) => {
+    const reciter = "Alafasy_128kbps";
+    const surahStr = surahNumber.toString().padStart(3, '0');
+    const ayahStr = ayahNumber.toString().padStart(3, '0');
+    return `https://everyayah.com/data/${reciter}/${surahStr}${ayahStr}.mp3`;
+  };
+
+  // Toggle audio for a specific ayah
+  const toggleAudio = async (ayahNumber: number) => {
+    const audioId = `${surahNumber}-${ayahNumber}`;
+    
+    if (!audioRefs.current[ayahNumber]) {
+      const audio = new Audio();
+      audioRefs.current[ayahNumber] = audio;
+      
+      // Setup event listeners
+      audio.addEventListener('ended', () => {
+        setPlayingStates(prev => ({ ...prev, [ayahNumber]: false }));
+        setCurrentAudio(null, null);
+      });
+      
+      audio.addEventListener('error', () => {
+        setPlayingStates(prev => ({ ...prev, [ayahNumber]: false }));
+        setLoadingStates(prev => ({ ...prev, [ayahNumber]: false }));
+        console.error("Audio error for ayah:", ayahNumber);
+      });
+    }
+    
+    const audio = audioRefs.current[ayahNumber];
+    
+    if (playingStates[ayahNumber]) {
+      audio.pause();
+      setPlayingStates(prev => ({ ...prev, [ayahNumber]: false }));
+      if (currentAudioId === audioId) {
+        setCurrentAudio(null, null);
+      }
+    } else {
+      try {
+        setLoadingStates(prev => ({ ...prev, [ayahNumber]: true }));
+        
+        // Stop any currently playing audio
+        if (currentAudioId && currentAudioId !== audioId) {
+          setCurrentAudio(null, null);
+        }
+        
+        const audioUrl = getAudioUrl(ayahNumber);
+        audio.src = audioUrl;
+        
+        // Wait for audio to be ready before playing
+        await new Promise((resolve, reject) => {
+          if (!audio) {
+            reject(new Error("Audio element not found"));
+            return;
+          }
+          
+          const handleCanPlay = () => {
+            audio.removeEventListener('canplay', handleCanPlay);
+            audio.removeEventListener('error', handleError);
+            resolve(true);
+          };
+          
+          const handleError = () => {
+            audio.removeEventListener('canplay', handleCanPlay);
+            audio.removeEventListener('error', handleError);
+            reject(new Error("Audio load error"));
+          };
+          
+          audio.addEventListener('canplay', handleCanPlay);
+          audio.addEventListener('error', handleError);
+          audio.load();
+        });
+        
+        if (audio) {
+          await audio.play();
+          setPlayingStates(prev => ({ ...prev, [ayahNumber]: true }));
+          setLoadingStates(prev => ({ ...prev, [ayahNumber]: false }));
+          setCurrentAudio(audio, audioId, () => {
+            setPlayingStates(prev => ({ ...prev, [ayahNumber]: false }));
+          });
+        }
+      } catch (err) {
+        console.error("Error playing audio:", err);
+        setLoadingStates(prev => ({ ...prev, [ayahNumber]: false }));
+        // Try fallback
+        try {
+          const alternativeUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surahNumber}/${ayahNumber}.mp3`;
+          audio.src = alternativeUrl;
+          
+          await new Promise((resolve, reject) => {
+            const handleCanPlay = () => {
+              audio.removeEventListener('canplay', handleCanPlay);
+              audio.removeEventListener('error', handleError);
+              resolve(true);
+            };
+            
+            const handleError = () => {
+              audio.removeEventListener('canplay', handleCanPlay);
+              audio.removeEventListener('error', handleError);
+              reject(new Error("Fallback audio load error"));
+            };
+            
+            audio.addEventListener('canplay', handleCanPlay);
+            audio.addEventListener('error', handleError);
+            audio.load();
+          });
+          
+          await audio.play();
+          setPlayingStates(prev => ({ ...prev, [ayahNumber]: true }));
+          setLoadingStates(prev => ({ ...prev, [ayahNumber]: false }));
+          setCurrentAudio(audio, audioId, () => {
+            setPlayingStates(prev => ({ ...prev, [ayahNumber]: false }));
+          });
+        } catch (fallbackErr) {
+          console.error("Fallback also failed:", fallbackErr);
+          setLoadingStates(prev => ({ ...prev, [ayahNumber]: false }));
+        }
+      }
+    }
+  };
+
+  // Listen for changes in currentAudioId
+  useEffect(() => {
+    Object.keys(audioRefs.current).forEach((key) => {
+      const ayahNum = parseInt(key);
+      const audioId = `${surahNumber}-${ayahNum}`;
+      if (currentAudioId && currentAudioId !== audioId && playingStates[ayahNum]) {
+        audioRefs.current[ayahNum]?.pause();
+        setPlayingStates(prev => ({ ...prev, [ayahNum]: false }));
+      }
+    });
+  }, [currentAudioId, surahNumber, playingStates]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(audioRefs.current).forEach(audio => {
+        if (audio) {
+          audio.pause();
+          audio.src = '';
+        }
+      });
+    };
+  }, []);
 
   // دمج النص مع ترقيم الآيات
   const processedAyahs = useMemo(() => {
@@ -143,7 +294,9 @@ export function MushafPage({
                     </div>
                     <span 
                       style={{ 
-                        display: "inline-block",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
                         margin: "0 12px",
                         verticalAlign: "middle",
                       }}
@@ -191,13 +344,48 @@ export function MushafPage({
                         }}></span>
                         {toArabicNumerals(ayah.number)}
                       </span>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => toggleAudio(ayah.number)}
+                        disabled={loadingStates[ayah.number]}
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          borderRadius: "6px",
+                          border: "none",
+                          background: playingStates[ayah.number]
+                            ? (isDark ? "#30D09A" : "#16A34A")
+                            : (isDark ? "rgba(48, 208, 154, 0.1)" : "rgba(22, 163, 74, 0.1)"),
+                          color: playingStates[ayah.number]
+                            ? "#fff"
+                            : (isDark ? "#30D09A" : "#16A34A"),
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: loadingStates[ayah.number] ? "not-allowed" : "pointer",
+                          opacity: loadingStates[ayah.number] ? 0.5 : 1,
+                          transition: "all 0.2s",
+                        }}
+                        title={playingStates[ayah.number] ? "إيقاف الصوت" : "تشغيل الصوت"}
+                      >
+                        {loadingStates[ayah.number] ? (
+                          <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} />
+                        ) : playingStates[ayah.number] ? (
+                          <VolumeX size={12} />
+                        ) : (
+                          <Volume2 size={12} />
+                        )}
+                      </motion.button>
                     </span>
                   </>
                 )}
                 {!ayah.isBismillah && (
                   <span 
                     style={{ 
-                      display: "inline-block",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
                       margin: "0 12px",
                       verticalAlign: "middle",
                     }}
@@ -245,6 +433,39 @@ export function MushafPage({
                       }}></span>
                       {toArabicNumerals(ayah.number)}
                     </span>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => toggleAudio(ayah.number)}
+                      disabled={loadingStates[ayah.number]}
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                        borderRadius: "6px",
+                        border: "none",
+                        background: playingStates[ayah.number]
+                          ? (isDark ? "#30D09A" : "#16A34A")
+                          : (isDark ? "rgba(48, 208, 154, 0.1)" : "rgba(22, 163, 74, 0.1)"),
+                        color: playingStates[ayah.number]
+                          ? "#fff"
+                          : (isDark ? "#30D09A" : "#16A34A"),
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: loadingStates[ayah.number] ? "not-allowed" : "pointer",
+                        opacity: loadingStates[ayah.number] ? 0.5 : 1,
+                        transition: "all 0.2s",
+                      }}
+                      title={playingStates[ayah.number] ? "إيقاف الصوت" : "تشغيل الصوت"}
+                    >
+                      {loadingStates[ayah.number] ? (
+                        <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} />
+                      ) : playingStates[ayah.number] ? (
+                        <VolumeX size={12} />
+                      ) : (
+                        <Volume2 size={12} />
+                      )}
+                    </motion.button>
                   </span>
                 )}
                 <span style={{ display: "inline" }}>{ayah.text}</span>
