@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Heart, Bookmark, Sun, Moon, Menu, X } from "lucide-react";
+import { BookOpen, Heart, Bookmark, Sun, Moon, Menu, X, Home, Sparkles, CircleDot } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,10 +13,10 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { href: "/", label: "الرئيسية", icon: BookOpen },
+    { href: "/", label: "الرئيسية", icon: Home },
     { href: "/quran", label: "القرآن الكريم", icon: BookOpen },
-    { href: "/adhkar", label: "الأذكار", icon: Heart },
-    { href: "/tasbih", label: "السبحة", icon: Bookmark },
+    { href: "/adhkar", label: "الأذكار", icon: Sparkles },
+    { href: "/tasbih", label: "السبحة", icon: CircleDot },
     { href: "/bookmarks", label: "العلامات", icon: Bookmark },
     { href: "/favorites", label: "المفضلة", icon: Heart },
   ];
@@ -62,32 +62,135 @@ export default function Navbar() {
             })}
             
             {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2.5 rounded-xl text-[#334155] dark:text-[#ECFDF5]/60 hover:bg-[#F7FDFB] dark:hover:bg-[#141D1B] transition-all duration-200"
-              aria-label="Toggle theme"
-            >
-              {settings.theme === "light" ? (
-                <Moon className="h-5 w-5" />
-              ) : (
-                <Sun className="h-5 w-5" />
-              )}
-            </button>
+            <motion.button
+  onClick={toggleTheme}
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  className="relative w-14 h-8 rounded-full p-1 transition-all duration-300 overflow-hidden"
+  style={{
+    background: settings.theme === "light" 
+      ? "linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%)"
+      : "linear-gradient(135deg, #1f2937 0%, #111827 100%)",
+    boxShadow: settings.theme === "light"
+      ? "inset 0 2px 4px rgba(0,0,0,0.1), inset 0 -2px 4px rgba(255,255,255,0.8), 0 2px 8px rgba(0,0,0,0.1)"
+      : "inset 0 2px 4px rgba(0,0,0,0.5), inset 0 -2px 4px rgba(255,255,255,0.1), 0 2px 8px rgba(0,0,0,0.3)",
+  }}
+  aria-label="Toggle theme"
+>
+  {/* Animated Circle */}
+  <motion.div
+    className="absolute top-1 w-6 h-6 rounded-full flex items-center justify-center"
+    initial={false}
+    animate={{
+      left: settings.theme === "light" ? "4px" : "calc(100% - 28px)",
+    }}
+    transition={{
+      type: "spring",
+      stiffness: 500,
+      damping: 30,
+    }}
+    style={{
+      background: settings.theme === "light"
+        ? "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)"
+        : "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+      boxShadow: settings.theme === "light"
+        ? "0 2px 8px rgba(251, 191, 36, 0.4), inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2)"
+        : "0 2px 8px rgba(59, 130, 246, 0.4), inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3)",
+    }}
+  >
+    <motion.div
+      animate={{
+        rotate: settings.theme === "light" ? 0 : 180,
+      }}
+      transition={{
+        duration: 0.3,
+      }}
+    >
+      {settings.theme === "light" ? (
+        <Sun className="h-4 w-4 text-white" strokeWidth={2.5} />
+      ) : (
+        <Moon className="h-4 w-4 text-white" strokeWidth={2.5} />
+      )}
+    </motion.div>
+  </motion.div>
+  
+  {/* Background gradient overlay */}
+  <div 
+    className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300"
+    style={{
+      background: settings.theme === "light"
+        ? "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 100%)"
+        : "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%)",
+    }}
+  />
+</motion.button>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
-            <button
+            <motion.button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl text-[#334155] dark:text-[#ECFDF5]/60 hover:bg-[#F7FDFB] dark:hover:bg-[#141D1B] transition-all"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative w-14 h-8 rounded-full p-1 transition-all duration-300 overflow-hidden"
+              style={{
+                background: settings.theme === "light" 
+                  ? "linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%)"
+                  : "linear-gradient(135deg, #1f2937 0%, #111827 100%)",
+                boxShadow: settings.theme === "light"
+                  ? "inset 0 2px 4px rgba(0,0,0,0.1), inset 0 -2px 4px rgba(255,255,255,0.8), 0 2px 8px rgba(0,0,0,0.1)"
+                  : "inset 0 2px 4px rgba(0,0,0,0.5), inset 0 -2px 4px rgba(255,255,255,0.1), 0 2px 8px rgba(0,0,0,0.3)",
+              }}
               aria-label="Toggle theme"
             >
-              {settings.theme === "light" ? (
-                <Moon className="h-5 w-5" />
-              ) : (
-                <Sun className="h-5 w-5" />
-              )}
-            </button>
+              {/* Animated Circle */}
+              <motion.div
+                className="absolute top-1 w-6 h-6 rounded-full flex items-center justify-center"
+                initial={false}
+                animate={{
+                  right: settings.theme === "light" ? "4px" : "auto",
+                  left: settings.theme === "light" ? "auto" : "4px",
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 30,
+                }}
+                style={{
+                  background: settings.theme === "light"
+                    ? "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)"
+                    : "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                  boxShadow: settings.theme === "light"
+                    ? "0 2px 8px rgba(251, 191, 36, 0.4), inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2)"
+                    : "0 2px 8px rgba(59, 130, 246, 0.4), inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3)",
+                }}
+              >
+                <motion.div
+                  animate={{
+                    rotate: settings.theme === "light" ? 0 : 180,
+                  }}
+                  transition={{
+                    duration: 0.3,
+                  }}
+                >
+                  {settings.theme === "light" ? (
+                    <Sun className="h-4 w-4 text-white" strokeWidth={2.5} />
+                  ) : (
+                    <Moon className="h-4 w-4 text-white" strokeWidth={2.5} />
+                  )}
+                </motion.div>
+              </motion.div>
+              
+              {/* Background gradient overlay */}
+              <div 
+                className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300"
+                style={{
+                  background: settings.theme === "light"
+                    ? "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 100%)"
+                    : "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%)",
+                }}
+              />
+            </motion.button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2.5 rounded-xl text-[#334155] dark:text-[#ECFDF5]/60 hover:bg-[#F7FDFB] dark:hover:bg-[#141D1B] transition-all"
