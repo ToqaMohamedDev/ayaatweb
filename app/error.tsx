@@ -8,13 +8,33 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">حدث خطأ</h1>
-        <p className="text-xl mb-4">{error.message}</p>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#1f2937',
+      color: '#ECFDF5',
+      fontFamily: 'system-ui, sans-serif'
+    }}>
+      <div style={{ textAlign: 'center' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+          حدث خطأ
+        </h1>
+        <p style={{ fontSize: '1.25rem', marginBottom: '1rem', opacity: 0.8 }}>
+          {error?.message || "حدث خطأ غير متوقع"}
+        </p>
         <button
           onClick={reset}
-          className="px-6 py-3 bg-primary-500 text-white rounded-lg"
+          style={{
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#16A34A',
+            color: 'white',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'pointer',
+            fontSize: '1rem'
+          }}
         >
           حاول مرة أخرى
         </button>
