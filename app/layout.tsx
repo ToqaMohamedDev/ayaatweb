@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import ScrollProgressBar from "@/components/ScrollProgressBar";
-import { BookmarksProvider } from "@/contexts/BookmarksContext";
-import { FavoritesProvider } from "@/contexts/FavoritesContext";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,17 +19,11 @@ export default function RootLayout({
   return (
       <html lang="ar" dir="rtl" className="h-full">
         <body className={`${inter.className} h-full`}>
-          <ThemeProvider>
-            <BookmarksProvider>
-              <FavoritesProvider>
-                <ScrollProgressBar />
-                <Navbar />
-                <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  {children}
-                </main>
-              </FavoritesProvider>
-            </BookmarksProvider>
-          </ThemeProvider>
+          <Providers>
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              {children}
+            </main>
+          </Providers>
         </body>
       </html>
   );
