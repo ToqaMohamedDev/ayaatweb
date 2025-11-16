@@ -5,7 +5,8 @@ import { eveningThikr } from "@/lib/adhkarData";
 import { ThikrCard } from "@/components/ThikrCard";
 import { ThikrState } from "@/types";
 import { StorageKeys, getStorageItem, setStorageItem } from "@/lib/storage";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Sunset, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +19,6 @@ export default function EveningAdhkarPage() {
       {}
     );
     
-    // تهيئة الحالات للذكريات غير المحفوظة
     const initialized: Record<string, ThikrState> = {};
     eveningThikr.forEach((thikr) => {
       initialized[thikr.id] =
@@ -83,46 +83,69 @@ export default function EveningAdhkarPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-              أذكار المساء
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              اقرأ الأذكار واضغط للعد
-            </p>
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mb-10"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-[#16A34A] dark:bg-[#30D09A] flex items-center justify-center shadow-lg">
+              <Sunset className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold text-[#0F172A] dark:text-[#ECFDF5] mb-2">
+                أذكار المساء
+              </h1>
+              <p className="text-[#64748B] dark:text-[#ECFDF5]/60 text-lg">
+                اقرأ الأذكار واضغط للعد
+              </p>
+            </div>
           </div>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleResetAll}
-            className="flex items-center space-x-2 rtl:space-x-reverse px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-[#F7FDFB] dark:bg-[#141D1B] text-[#334155] dark:text-[#ECFDF5]/60 rounded-xl font-semibold hover:bg-[#F7FDFB]/80 dark:hover:bg-[#141D1B]/80 transition-colors border border-[#16A34A]/10 dark:border-[#30D09A]/10"
           >
-            <RotateCcw className="h-4 w-4" />
+            <RotateCcw className="h-5 w-5" />
             <span>إعادة ضبط الكل</span>
-          </button>
+          </motion.button>
         </div>
 
         {/* Progress Summary */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700 mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              التقدم العام
-            </span>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="bg-white/60 dark:bg-[#141D1B]/60 backdrop-blur-[16px] rounded-[20px] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-[#16A34A]/10 dark:border-[#30D09A]/10"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <TrendingUp className="h-6 w-6 text-[#16A34A] dark:text-[#30D09A]" />
+              <span className="text-lg font-semibold text-[#334155] dark:text-[#ECFDF5]/80">
+                التقدم العام
+              </span>
+            </div>
+            <span className="text-lg font-bold text-[#16A34A] dark:text-[#30D09A]">
               {totalCompleted} / {eveningThikr.length} مكتمل
             </span>
           </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
-            <div
-              className="bg-primary-light dark:bg-primary-dark h-3 rounded-full transition-all"
-              style={{ width: `${overallProgress}%` }}
+          <div className="w-full bg-[#F7FDFB] dark:bg-[#0E1412] rounded-full h-4 mb-3 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${overallProgress}%` }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="h-4 rounded-full bg-[#16A34A] dark:bg-[#30D09A]"
             />
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-500">
+          <div className="text-sm text-[#64748B] dark:text-[#ECFDF5]/60 font-medium">
             {totalProgress.current} / {totalProgress.total} ذكر
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Thikr Cards */}
       <div className="space-y-6">
@@ -147,4 +170,3 @@ export default function EveningAdhkarPage() {
     </div>
   );
 }
-

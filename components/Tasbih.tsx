@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { TasbihStats } from "@/types";
 import { StorageKeys, getStorageItem, setStorageItem } from "@/lib/storage";
-import { RotateCcw, Save, TrendingUp, Calendar } from "lucide-react";
+import { RotateCcw, Save, TrendingUp, Calendar, Sparkles, Volume2, Vibrate } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const tasbihTypes = [
   { id: "subhanallah", name: "سبحان الله", count: 33 },
@@ -46,13 +47,11 @@ export default function Tasbih() {
     }
   }, [stats]);
 
-  // تحديث اليوم
   useEffect(() => {
     const today = new Date().toDateString();
     const lastDate = stats.history[stats.history.length - 1]?.date;
     
     if (lastDate !== today) {
-      // يوم جديد - حفظ إجمالي اليوم السابق
       if (stats.todayTotal > 0) {
         const updatedHistory = [...stats.history];
         const existingIndex = updatedHistory.findIndex((h) => h.date === today);
@@ -81,16 +80,10 @@ export default function Tasbih() {
     const newTodayTotal = stats.todayTotal + 1;
     const newAllTimeTotal = stats.allTimeTotal + 1;
 
-    // اهتزاز عند الوصول لـ 33 أو 100
     if (vibrationEnabled && (newCount === 33 || newCount === 100)) {
       if (navigator.vibrate) {
         navigator.vibrate(200);
       }
-    }
-
-    // صوت خفيف
-    if (soundEnabled) {
-      // يمكن إضافة صوت هنا
     }
 
     setStats({
@@ -100,7 +93,6 @@ export default function Tasbih() {
       allTimeTotal: newAllTimeTotal,
     });
 
-    // إعادة الضبط التلقائي عند الوصول للهدف
     if (newCount >= targetCount) {
       setTimeout(() => {
         setStats((prev) => ({
@@ -147,210 +139,260 @@ export default function Tasbih() {
 
   return (
     <div className="min-h-screen">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-          السبحة الإلكترونية
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300">
-          اضغط للعد والتسبيح
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Counter */}
         <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/60 dark:bg-[#141D1B]/60 backdrop-blur-[16px] rounded-[20px] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-[#16A34A]/10 dark:border-[#30D09A]/10"
+          >
             {/* Type Selector */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="mb-8">
+              <label className="block text-lg font-semibold text-[#334155] dark:text-[#ECFDF5]/80 mb-4">
                 نوع التسبيح
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {tasbihTypes.map((type) => (
-                  <button
+                  <motion.button
                     key={type.id}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => handleTypeChange(type.id)}
-                    className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                    className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
                       stats.currentType === type.id
-                        ? "bg-primary-light dark:bg-primary-dark text-white"
-                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        ? "text-white shadow-lg bg-[#16A34A] dark:bg-[#30D09A]"
+                        : "bg-[#F7FDFB] dark:bg-[#141D1B] text-[#334155] dark:text-[#ECFDF5]/60 hover:bg-[#F7FDFB]/80 dark:hover:bg-[#141D1B]/80 border border-[#16A34A]/10 dark:border-[#30D09A]/10"
                     }`}
                   >
                     {type.name}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
 
             {/* Custom Input */}
-            {stats.currentType === "custom" && (
-              <div className="mb-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    نص التسبيح
-                  </label>
-                  <input
-                    type="text"
-                    value={customText}
-                    onChange={(e) => setCustomText(e.target.value)}
-                    placeholder="اكتب التسبيح..."
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    dir="rtl"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    عدد التكرار
-                  </label>
-                  <input
-                    type="number"
-                    value={customCount}
-                    onChange={(e) => setCustomCount(parseInt(e.target.value) || 100)}
-                    min="1"
-                    max="1000"
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-              </div>
-            )}
+            <AnimatePresence>
+              {stats.currentType === "custom" && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-8 space-y-4"
+                >
+                  <div>
+                    <label className="block text-sm font-semibold text-[#334155] dark:text-[#ECFDF5]/80 mb-2">
+                      نص التسبيح
+                    </label>
+                    <input
+                      type="text"
+                      value={customText}
+                      onChange={(e) => setCustomText(e.target.value)}
+                      placeholder="اكتب التسبيح..."
+                      className="w-full px-4 py-3 border-2 border-[#16A34A]/20 dark:border-[#30D09A]/20 rounded-xl bg-white/80 dark:bg-[#141D1B]/80 backdrop-blur-sm text-[#0F172A] dark:text-[#ECFDF5] focus:ring-2 focus:ring-[#16A34A] dark:focus:ring-[#30D09A] focus:border-transparent transition-all"
+                      dir="rtl"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-[#334155] dark:text-[#ECFDF5]/80 mb-2">
+                      عدد التكرار
+                    </label>
+                    <input
+                      type="number"
+                      value={customCount}
+                      onChange={(e) => setCustomCount(parseInt(e.target.value) || 100)}
+                      min="1"
+                      max="1000"
+                      className="w-full px-4 py-3 border-2 border-[#16A34A]/20 dark:border-[#30D09A]/20 rounded-xl bg-white/80 dark:bg-[#141D1B]/80 backdrop-blur-sm text-[#0F172A] dark:text-[#ECFDF5] focus:ring-2 focus:ring-[#16A34A] dark:focus:ring-[#30D09A] focus:border-transparent transition-all"
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Current Type Display */}
-            <div className="text-center mb-8">
-              <p className="text-2xl font-arabic text-gray-900 dark:text-white mb-2" dir="rtl">
+            <div className="text-center mb-10">
+              <motion.p
+                key={stats.currentType}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-3xl md:text-4xl font-arabic text-[#0F172A] dark:text-[#ECFDF5] mb-3 font-bold" dir="rtl"
+              >
                 {stats.currentType === "custom" && customText
                   ? customText
                   : currentType.name}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              </motion.p>
+              <p className="text-lg text-[#64748B] dark:text-[#ECFDF5]/60">
                 الهدف: {targetCount}
               </p>
             </div>
 
             {/* Counter Display */}
-            <div className="text-center mb-6">
-              <div className="text-8xl font-bold text-primary-light dark:text-primary-dark mb-4">
+            <div className="text-center mb-8">
+              <motion.div
+                key={stats.currentCount}
+                initial={{ scale: 1.2, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="text-9xl md:text-[12rem] font-bold mb-6 text-[#16A34A] dark:text-[#30D09A]"
+              >
                 {stats.currentCount}
-              </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-2">
-                <div
-                  className="bg-primary-light dark:bg-primary-dark h-4 rounded-full transition-all"
-                  style={{ width: `${progress}%` }}
+              </motion.div>
+              <div className="w-full bg-[#F7FDFB] dark:bg-[#0E1412] rounded-full h-5 mb-3 overflow-hidden shadow-inner">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.5 }}
+                  className="h-5 rounded-full bg-[#16A34A] dark:bg-[#30D09A]"
                 />
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-lg font-semibold text-[#64748B] dark:text-[#ECFDF5]/60">
                 {stats.currentCount} / {targetCount}
               </p>
             </div>
 
             {/* Main Button */}
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
               onClick={handleCount}
-              className="w-full py-6 bg-primary-light dark:bg-primary-dark text-white rounded-xl text-2xl font-bold hover:opacity-90 active:scale-95 transition-all shadow-lg"
+              className="w-full py-6 bg-[#16A34A] dark:bg-[#30D09A] text-white rounded-2xl text-2xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300"
             >
               اضغط للعد
-            </button>
+            </motion.button>
 
             {/* Actions */}
-            <div className="flex items-center justify-center space-x-4 rtl:space-x-reverse mt-4">
-              <button
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={handleReset}
-                className="flex items-center space-x-2 rtl:space-x-reverse px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-[#F7FDFB] dark:bg-[#141D1B] text-[#334155] dark:text-[#ECFDF5]/60 rounded-xl font-semibold hover:bg-[#F7FDFB]/80 dark:hover:bg-[#141D1B]/80 transition-colors border border-[#16A34A]/10 dark:border-[#30D09A]/10"
               >
-                <RotateCcw className="h-4 w-4" />
+                <RotateCcw className="h-5 w-5" />
                 <span>إعادة ضبط</span>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={handleSave}
-                className="flex items-center space-x-2 rtl:space-x-reverse px-4 py-2 bg-green-500 dark:bg-green-400 text-white rounded-lg hover:opacity-90 transition-opacity"
+                className="flex items-center gap-2 px-6 py-3 bg-[#16A34A] dark:bg-[#30D09A] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
               >
-                <Save className="h-4 w-4" />
+                <Save className="h-5 w-5" />
                 <span>حفظ</span>
-              </button>
+              </motion.button>
             </div>
 
             {/* Settings */}
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 flex items-center justify-center space-x-4 rtl:space-x-reverse">
-              <label className="flex items-center space-x-2 rtl:space-x-reverse text-sm text-gray-700 dark:text-gray-300">
+            <div className="mt-8 pt-6 border-t border-[#16A34A]/10 dark:border-[#30D09A]/10 flex items-center justify-center gap-6">
+              <label className="flex items-center gap-2 text-sm font-semibold text-[#334155] dark:text-[#ECFDF5]/80 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={vibrationEnabled}
                   onChange={(e) => setVibrationEnabled(e.target.checked)}
-                  className="rounded"
+                  className="w-5 h-5 rounded text-[#16A34A] dark:text-[#30D09A] focus:ring-2 focus:ring-[#16A34A] dark:focus:ring-[#30D09A]"
                 />
+                <Vibrate className="h-5 w-5" />
                 <span>الاهتزاز</span>
               </label>
-              <label className="flex items-center space-x-2 rtl:space-x-reverse text-sm text-gray-700 dark:text-gray-300">
+              <label className="flex items-center gap-2 text-sm font-semibold text-[#334155] dark:text-[#ECFDF5]/80 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={soundEnabled}
                   onChange={(e) => setSoundEnabled(e.target.checked)}
-                  className="rounded"
+                  className="w-5 h-5 rounded text-[#16A34A] dark:text-[#30D09A] focus:ring-2 focus:ring-[#16A34A] dark:focus:ring-[#30D09A]"
                 />
+                <Volume2 className="h-5 w-5" />
                 <span>الصوت</span>
               </label>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Stats Sidebar */}
         <div className="space-y-6">
           {/* Today Stats */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center space-x-2 rtl:space-x-reverse mb-4">
-              <Calendar className="h-5 w-5 text-primary-light dark:text-primary-dark" />
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white/60 dark:bg-[#141D1B]/60 backdrop-blur-[16px] rounded-[20px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-[#16A34A]/10 dark:border-[#30D09A]/10"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-[#16A34A] dark:bg-[#30D09A] flex items-center justify-center shadow-lg">
+                <Calendar className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-[#0F172A] dark:text-[#ECFDF5]">
                 اليوم
               </h3>
             </div>
-            <div className="text-3xl font-bold text-primary-light dark:text-primary-dark mb-2">
+            <div className="text-5xl font-bold text-[#16A34A] dark:text-[#30D09A] mb-2">
               {stats.todayTotal}
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">تسبيحة</p>
-          </div>
+            <p className="text-sm text-[#64748B] dark:text-[#ECFDF5]/60 font-medium">تسبيحة</p>
+          </motion.div>
 
           {/* All Time Stats */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center space-x-2 rtl:space-x-reverse mb-4">
-              <TrendingUp className="h-5 w-5 text-primary-light dark:text-primary-dark" />
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white/60 dark:bg-[#141D1B]/60 backdrop-blur-[16px] rounded-[20px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-[#16A34A]/10 dark:border-[#30D09A]/10"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-[#16A34A] dark:bg-[#30D09A] flex items-center justify-center shadow-lg">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-[#0F172A] dark:text-[#ECFDF5]">
                 الإجمالي
               </h3>
             </div>
-            <div className="text-3xl font-bold text-primary-light dark:text-primary-dark mb-2">
+            <div className="text-5xl font-bold text-[#16A34A] dark:text-[#30D09A] mb-2">
               {stats.allTimeTotal}
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">تسبيحة</p>
-          </div>
+            <p className="text-sm text-[#64748B] dark:text-[#ECFDF5]/60 font-medium">تسبيحة</p>
+          </motion.div>
 
           {/* Recent History */}
           {stats.history.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                السجل الأخير
-              </h3>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-white/60 dark:bg-[#141D1B]/60 backdrop-blur-[16px] rounded-[20px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-[#16A34A]/10 dark:border-[#30D09A]/10"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-[#16A34A] dark:bg-[#30D09A] flex items-center justify-center shadow-lg">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-[#0F172A] dark:text-[#ECFDF5]">
+                  السجل الأخير
+                </h3>
+              </div>
+              <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
                 {stats.history
                   .slice(-7)
                   .reverse()
                   .map((entry, index) => (
-                    <div
+                    <motion.div
                       key={index}
-                      className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-0"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="flex items-center justify-between py-3 px-4 bg-[#F7FDFB] dark:bg-[#0E1412] rounded-xl"
                     >
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                      <span className="text-sm font-medium text-[#64748B] dark:text-[#ECFDF5]/60">
                         {new Date(entry.date).toLocaleDateString("ar-SA")}
                       </span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      <span className="text-lg font-bold text-[#16A34A] dark:text-[#30D09A]">
                         {entry.count}
                       </span>
-                    </div>
+                    </motion.div>
                   ))}
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
     </div>
   );
 }
-

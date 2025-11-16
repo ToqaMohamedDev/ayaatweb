@@ -1,7 +1,7 @@
 "use client";
 
 import { Thikr, ThikrState } from "@/types";
-import { CheckCircle2, RotateCcw } from "lucide-react";
+import { CheckCircle2, RotateCcw, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface ThikrCardProps {
@@ -49,37 +49,37 @@ export function ThikrCard({ thikr, state, onUpdate }: ThikrCardProps) {
 
   return (
     <div
-      className={`card relative overflow-hidden transition-all duration-300 ${
+      className={`relative bg-white/60 dark:bg-[#141D1B]/60 backdrop-blur-[16px] rounded-[20px] p-8 border transition-all duration-200 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_48px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_48px_rgba(0,0,0,0.4)] overflow-hidden ${
         completed
-          ? "border-green-400 dark:border-green-500 bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-900/20 dark:to-green-800/10"
-          : "hover:border-primary-300 dark:hover:border-primary-600"
+          ? "border-[#16A34A] dark:border-[#30D09A]"
+          : "border-[#16A34A]/10 dark:border-[#30D09A]/10"
       }`}
     >
       {/* Completed Badge */}
       {completed && (
-        <div className="absolute top-4 left-4 rtl:left-auto rtl:right-4 z-10">
-          <div className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-xl shadow-lg flex items-center gap-2 animate-scaleIn">
-            <CheckCircle2 className="h-5 w-5" />
-            <span className="font-semibold">مكتمل</span>
+        <div className="absolute top-6 left-6 rtl:left-auto rtl:right-6 z-10">
+          <div className="bg-[#16A34A] dark:bg-[#30D09A] text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-2">
+            <Sparkles className="h-5 w-5" />
+            <span className="font-bold">مكتمل</span>
           </div>
         </div>
       )}
 
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="relative flex items-start justify-between mb-6">
         <div className="flex-1 pr-4 rtl:pr-0 rtl:pl-4">
-          <p className="text-2xl md:text-3xl font-arabic text-gray-900 dark:text-white leading-loose mb-4 text-right font-bold" dir="rtl">
+          <p className="text-2xl md:text-3xl font-arabic text-[#0F172A] dark:text-[#ECFDF5] leading-loose mb-4 text-right font-bold" dir="rtl">
             {thikr.text}
           </p>
           {thikr.benefit && (
-            <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 mb-3 border-r-4 border-primary-500 dark:border-primary-400">
-              <p className="text-sm text-gray-700 dark:text-gray-300 text-right leading-relaxed" dir="rtl">
+            <div className="bg-[#F7FDFB] dark:bg-[#141D1B] rounded-2xl p-5 mb-4 border-r-4 border-[#16A34A] dark:border-[#30D09A] shadow-md">
+              <p className="text-sm text-[#334155] dark:text-[#ECFDF5]/80 text-right leading-relaxed font-medium" dir="rtl">
                 {thikr.benefit}
               </p>
             </div>
           )}
           {thikr.source && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+            <p className="text-xs text-[#64748B] dark:text-[#ECFDF5]/40 font-semibold">
               📖 المصدر: {thikr.source}
             </p>
           )}
@@ -87,52 +87,56 @@ export function ThikrCard({ thikr, state, onUpdate }: ThikrCardProps) {
       </div>
 
       {/* Counter */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-lg font-bold text-gray-700 dark:text-gray-300">
-            {currentCount} / {thikr.count}
-          </span>
+      <div className="relative mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-[#16A34A] dark:bg-[#30D09A] flex items-center justify-center shadow-lg">
+              <span className="text-xl font-bold text-white">{currentCount}</span>
+            </div>
+            <div>
+              <span className="text-2xl font-bold text-[#0F172A] dark:text-[#ECFDF5] block">
+                {currentCount} / {thikr.count}
+              </span>
+              <span className="text-xs text-[#64748B] dark:text-[#ECFDF5]/60">ذكر</span>
+            </div>
+          </div>
           <button
             onClick={handleReset}
-            className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200 transition-all duration-200 hover:scale-110 hover:rotate-180"
+            className="p-3 rounded-xl bg-[#F7FDFB] dark:bg-[#141D1B] text-[#64748B] dark:text-[#ECFDF5]/60 hover:bg-[#F7FDFB]/80 dark:hover:bg-[#141D1B]/80 transition-all duration-200 active:scale-95 border border-[#16A34A]/10 dark:border-[#30D09A]/10"
             title="إعادة الضبط"
           >
             <RotateCcw className="h-5 w-5" />
           </button>
         </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+        <div className="w-full bg-[#F7FDFB] dark:bg-[#0E1412] rounded-full h-4 overflow-hidden shadow-inner">
           <div
-            className={`h-3 rounded-full transition-all duration-500 ${
+            className={`h-4 rounded-full transition-all duration-300 ${
               completed
-                ? "bg-gradient-to-r from-green-500 to-green-600"
-                : ""
+                ? "bg-[#16A34A] dark:bg-[#30D09A]"
+                : "bg-[#16A34A] dark:bg-[#30D09A]"
             }`}
-            style={{
-              ...(!completed ? { background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' } : {}),
-              width: `${progress}%`
-            }}
+            style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-4">
+      <div className="relative flex items-center gap-4">
         <button
           onClick={handleDecrement}
           disabled={currentCount === 0}
-          className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold text-xl hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+          className="w-14 h-14 rounded-xl bg-[#F7FDFB] dark:bg-[#141D1B] text-[#334155] dark:text-[#ECFDF5]/60 font-bold text-xl hover:bg-[#F7FDFB]/80 dark:hover:bg-[#141D1B]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg active:scale-95 border border-[#16A34A]/10 dark:border-[#30D09A]/10"
         >
           -
         </button>
         <button
           onClick={handleIncrement}
           disabled={completed}
-          className={`flex-1 h-12 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg ${
+          className={`flex-1 h-14 rounded-xl font-bold text-lg transition-all duration-200 shadow-xl active:scale-95 ${
             completed
-              ? "bg-gradient-to-r from-green-500 to-green-600 text-white cursor-not-allowed"
-              : "text-white hover:shadow-glow hover:scale-105 active:scale-95"
+              ? "bg-[#16A34A] dark:bg-[#30D09A] text-white cursor-not-allowed"
+              : "bg-[#16A34A] dark:bg-[#30D09A] text-white hover:shadow-2xl"
           }`}
-          style={!completed ? { background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' } : {}}
         >
           {completed ? "✓ مكتمل" : "اضغط للعد"}
         </button>
@@ -140,4 +144,3 @@ export function ThikrCard({ thikr, state, onUpdate }: ThikrCardProps) {
     </div>
   );
 }
-

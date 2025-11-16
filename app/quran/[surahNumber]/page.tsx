@@ -5,8 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import { fetchSurah, getSurah } from "@/lib/quranData";
 import { SurahWithAyahs } from "@/types";
 import { AyahCard } from "@/components/AyahCard";
-import { ArrowRight, ArrowLeft, Settings } from "lucide-react";
+import { MushafPage } from "@/components/MushafPage";
+import { ArrowRight, ArrowLeft, Settings, BookOpen, Loader2, Layout, FileText } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { motion } from "framer-motion";
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +21,7 @@ export default function SurahPage() {
   const [error, setError] = useState<string | null>(null);
   const { settings, setFontSize } = useTheme();
   const [showSettings, setShowSettings] = useState(false);
+  const [viewMode, setViewMode] = useState<"cards" | "mushaf">("mushaf");
 
   useEffect(() => {
     const loadSurah = async () => {
@@ -54,152 +57,254 @@ export default function SurahPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-light dark:border-primary-dark mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">جاري التحميل...</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <Loader2 className="h-12 w-12 text-primary-600 dark:text-primary-400 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400 text-lg">جاري التحميل...</p>
+        </motion.div>
       </div>
     );
   }
 
   if (error || !surah || !surahInfo) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500 dark:text-red-400 mb-4">{error || "السورة غير موجودة"}</p>
-        <button
-          onClick={() => router.push("/quran")}
-          className="px-4 py-2 bg-primary-light dark:bg-primary-dark text-white rounded-lg hover:opacity-90"
-        >
-          العودة لقائمة السور
-        </button>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center py-12"
+      >
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-8 mb-6">
+          <p className="text-red-600 dark:text-red-400 text-lg mb-4">{error || "السورة غير موجودة"}</p>
+          <button
+            onClick={() => router.push("/quran")}
+            className="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+          >
+            العودة لقائمة السور
+          </button>
+        </div>
+      </motion.div>
     );
   }
 
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between mb-4">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mb-10 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-8 shadow-xl border border-gray-200 dark:border-gray-700"
+      >
+        <div className="flex items-start justify-between mb-6">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 font-arabic">
-              {surah.name}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              {surah.englishNameTranslation} • {surah.numberOfAyahs} آية •{" "}
-              {surah.revelationType === "Meccan" ? "مكية" : "مدنية"}
-            </p>
-          </div>
-          <div className="relative">
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <Settings className="h-5 w-5" />
-            </button>
-            {showSettings && (
-              <div className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 z-10 border border-gray-200 dark:border-gray-700">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  حجم الخط
-                </label>
-                <div className="space-y-2">
-                  {(["small", "medium", "large", "xlarge"] as const).map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => {
-                        setFontSize(size);
-                        setShowSettings(false);
-                      }}
-                      className={`w-full text-right px-3 py-2 rounded-lg text-sm ${
-                        settings.fontSize === size
-                          ? "bg-primary-light dark:bg-primary-dark text-white"
-                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                      }`}
-                    >
-                      {size === "small" && "صغير"}
-                      {size === "medium" && "متوسط"}
-                      {size === "large" && "كبير"}
-                      {size === "xlarge" && "كبير جداً"}
-                    </button>
-                  ))}
-                </div>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
+                <BookOpen className="h-8 w-8 text-white" />
               </div>
-            )}
+              <div>
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 font-arabic">
+                  {surah.name}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400 text-lg">
+                  {surah.englishNameTranslation} • {surah.numberOfAyahs} آية •{" "}
+                  <span className={`px-3 py-1 rounded-lg text-sm font-semibold ${
+                    surah.revelationType === "Meccan" 
+                      ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300" 
+                      : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                  }`}>
+                    {surah.revelationType === "Meccan" ? "مكية" : "مدنية"}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setViewMode("mushaf")}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
+                  viewMode === "mushaf"
+                    ? "bg-[#16A34A] dark:bg-[#30D09A] text-white shadow-lg"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+                }`}
+              >
+                <FileText className="h-4 w-4" />
+                <span>مصحف</span>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setViewMode("cards")}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
+                  viewMode === "cards"
+                    ? "bg-[#16A34A] dark:bg-[#30D09A] text-white shadow-lg"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+                }`}
+              >
+                <Layout className="h-4 w-4" />
+                <span>بطاقات</span>
+              </motion.button>
+            </div>
+
+            {/* Settings */}
+            <div className="relative">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setShowSettings(!showSettings)}
+                className="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <Settings className="h-5 w-5" />
+              </motion.button>
+              {showSettings && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 z-10 border border-gray-200 dark:border-gray-700"
+                >
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    حجم الخط
+                  </label>
+                  <div className="space-y-2">
+                    {(["small", "medium", "large", "xlarge"] as const).map((size) => (
+                      <motion.button
+                        key={size}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          setFontSize(size);
+                          setShowSettings(false);
+                        }}
+                        className={`w-full text-right px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                          settings.fontSize === size
+                            ? "bg-[#16A34A] dark:bg-[#30D09A] text-white shadow-lg"
+                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        }`}
+                      >
+                        {size === "small" && "صغير"}
+                        {size === "medium" && "متوسط"}
+                        {size === "large" && "كبير"}
+                        {size === "xlarge" && "كبير جداً"}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
           {prevSurah ? (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05, x: -5 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => router.push(`/quran/${prevSurah}`)}
-              className="flex items-center space-x-2 rtl:space-x-reverse text-primary-light dark:text-primary-dark hover:opacity-80"
+              className="flex items-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-5 w-5" />
               <span>السورة السابقة</span>
-            </button>
+            </motion.button>
           ) : (
             <div></div>
           )}
           {nextSurah ? (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05, x: 5 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => router.push(`/quran/${nextSurah}`)}
-              className="flex items-center space-x-2 rtl:space-x-reverse text-primary-light dark:text-primary-dark hover:opacity-80"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
             >
               <span>السورة التالية</span>
-              <ArrowLeft className="h-4 w-4" />
-            </button>
+              <ArrowLeft className="h-5 w-5" />
+            </motion.button>
           ) : (
             <div></div>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Ayahs */}
-      <div className="space-y-4">
-        {surah.ayahs.map((ayah, index) => (
-          <AyahCard
-            key={ayah.number}
-            ayah={ayah}
-            surahNumber={surah.number}
+      {viewMode === "mushaf" ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <MushafPage
+            ayahs={surah.ayahs}
             surahName={surah.name}
-            showBismillah={index === 0 && surah.number !== 1 && surah.number !== 9}
+            surahNumber={surah.number}
+            showBismillah={surah.number !== 1 && surah.number !== 9}
           />
-        ))}
-      </div>
+        </motion.div>
+      ) : (
+        <div className="space-y-6">
+          {surah.ayahs.map((ayah, index) => (
+            <motion.div
+              key={ayah.number}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.02 }}
+            >
+              <AyahCard
+                ayah={ayah}
+                surahNumber={surah.number}
+                surahName={surah.name}
+                showBismillah={index === 0 && surah.number !== 1 && surah.number !== 9}
+              />
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {/* Bottom Navigation */}
-      <div className="mt-8 flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="mt-12 flex items-center justify-between pt-8 border-t border-gray-200 dark:border-gray-700"
+      >
         {prevSurah ? (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05, x: -5 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => {
               router.push(`/quran/${prevSurah}`);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className="flex items-center space-x-2 rtl:space-x-reverse text-primary-light dark:text-primary-dark hover:opacity-80"
+            className="flex items-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-5 w-5" />
             <span>السورة السابقة</span>
-          </button>
+          </motion.button>
         ) : (
           <div></div>
         )}
         {nextSurah ? (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05, x: 5 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => {
               router.push(`/quran/${nextSurah}`);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className="flex items-center space-x-2 rtl:space-x-reverse text-primary-light dark:text-primary-dark hover:opacity-80"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
           >
             <span>السورة التالية</span>
-            <ArrowLeft className="h-4 w-4" />
-          </button>
+            <ArrowLeft className="h-5 w-5" />
+          </motion.button>
         ) : (
           <div></div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
-
